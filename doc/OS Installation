@@ -8,7 +8,51 @@ OS lựa chọn cho dự án là Ubuntu 12.04 LST
 Các bước cài đặt:
 
 # Lê Tự Viết Thắng viết nội dung này
+# Tất cả các thành viên của team comment
 
+Bước 1: Đăng nhập vào IP quản trị của Ilo của rack server.
+
+Bước 2: Thực hiện khởi động server vật lý từ phần mềm ILO.
+
+Bước 3: Chọn kiểu boot cho server, ở đây do boot bằng file iso nên ta chọn boot là virtual disk
+
+Bước 4: Map file iso kết nối đến server vật lý để boot vào quá trình cài đặt.
+
+Bước 5: Boot vào giao diện ubuntu ta sẽ chọn install ubuntu server
+
+Bước 6: Chọn ngôn ngữ cài đặt : English.
+
+Bước 7: Chọn vùng cài đặt (Quốc gia, hay vùng): Vietnam
+
+Bước 8: Chọn miền quốc gia mà máy tính sẽ thực hiện cài đặt : United States.
+
+Bước 9: Cấu hình bàn phím ta chọn No.
+
+Bước 10: Như thiết lập miền địa phương, gần như tất cả các máy tính của Việt Nam thường sử dụng tiếng Anh như Mỹ bố trí bàn phím mặc định. Chọn English (US)> English US.
+
+Bước 11: Sau đó, đây là một phần cấu hình mạng. Ta sử dụng hai thẻ giao diện mạng, vì vậy nó sẽ hiển thị hai cấu hình như thế này. Chỉ cần chọn một trong số đó, eth0 hoặc eth1.
+
+Bước 12: Chọn 1 trong 2 card mạng trên để cấu hình.
+
+Bước 13: Cấu hình mạng bằng tay: Configure Network Manually
+
+Bước 14: Phần tiếp theo là cấu hình tên máy
+
+Bước 15: Cấu hình tên miền cho máy tính (nếu có)
+
+Bước 16: Ta sẽ setup tên đăng nhập và mật khẩu .
+
+Bước 17: Và nhập mật khẩu người dùng mới hai lần. Một cho mật khẩu mới bản thân nó, và một để xác nhận. Không bao giờ sử dụng mật khẩu yếu! Luôn luôn sử dụng các từ, số, kết hợp ký tự đặc biệt.
+
+Bước 18: Chọn No, nếu nó yêu cầu bạn mã hóa thư mục của mình.
+
+Bước 19: Sau đó, cấu hình thời gian cho server. Nếu  đang kết nối với internet, Ubuntu sẽ tự động cấu hình thời gian. Nếu nó là đúng, chọn Yes.
+
+Bước 20: Chọn Manual để cài đặt phân vùng ổ đĩa.
+
+Bước 21: Chọn ổ đĩa cần chia phân vùng.
+
+Bước 22: Cuối cùng chọn Yes để ghi các thay đổi  vào đĩa.
 
 
 
