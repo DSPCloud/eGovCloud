@@ -5,7 +5,20 @@ Script cài đặt được đặt trong thư mục eGovCloud/script
 
 OS lựa chọn cho dự án là Ubuntu 12.04 LST
 
-Các bước cài đặt:
+Tài liệu này gồm 2 phần:
+Phân 1: Chuẩn bị một server để triển khai Project
+  Yêu cầu của phần 1:
+# Phần này Thắng chủ trì, anh em bổ sung  
+  
+Phần 2: Chuẩn bị môi trường để xây dựng cloud (cài đặt KVM)
+  Yêu cầu phần 2:
+# Phần này Thắng chủ trì, anh em bổ sung
+
+# NỘI DUNG CỦA TÀI LIỆU
+
+PHẦN 1: CHUẨN BỊ SERVER
+
+Các bước cài đặt OS cho 1 server:
 
 # Lê Tự Viết Thắng viết nội dung này
 # Tất cả các thành viên của team comment
@@ -54,6 +67,44 @@ Bước 21: Chọn ổ đĩa cần chia phân vùng.
 
 Bước 22: Cuối cùng chọn Yes để ghi các thay đổi  vào đĩa.
 
+Bước 23 :Khi quá trình đang chạy, đột nhiên yêu cầu  điền địa chỉ proxy HTTP. Chỉ cần để trống sau đó chọn Continue.
+
+Bước 24: Chọn Install Security Updates Automaticcally để đảm bảo hệ thống được an toàn
+
+Bước 25: Bây giờ, đây là phần lựa chọn gói cài đặt: Tạm thời sẽ chỉ cài đặt duy nhất 1 gói là  OpenSSH server
+
+Bước 26: Chọn Yes trong cài đặt này GRUB Boot Loader để thực hiện cho việc xử lý sự cố sau này.
+
+Bước 27: Chọn Continue để khởi động lại server và kết thúc quá trình cài đặt
+
+PHẦN 2: CÀI ĐẶT KVM
+
+Các bước cài đặt KVM
+# Lê Tự Viết Thắng viết phần này
+# Tất cả các thành viên của team comment
+
+Bước 1: Cần xác định xem CPU của mình có hỗ trợ ảo hóa phần cứng hay không.
+
+  egrep '(vmx|svm)' --color=always /proc/cpuinfo
+
+Bước 2: Để cài đặt KVM và vmbuilder (một script để khởi tạo hệ thống máy ảo Ubuntu cơ bản) chúng ta chạy:
+	apt-get install ubuntu-virt-server python-vm-builder kvm-pxe
+
+Bước 3: Sau đó cần thêm vào user như là đăng nhập hiện tại (root) cho nhóm libvirtd: 
+  adduser `id -un` libvirtd
+  adduser `id -un` kvm 
+
+Bước 4: Cần đăng xuất và đăng nhập trở lại
+
+Bước 5: Tiếp theo chúng ta cần thiết lập một cầu nối cho mạng trên máy chủ (network bridge) để có thể truy cập máy ảo từ xa bằng các host khác nhau như hệ thống vật lý trong mạng. Để làm điều này, chỉ cần cài đặt gói bridge-utils... 
+  apt-get install bridge-utils 
+Và cấu hình một bridge. Mở /etc/network/interfaces: 
+  vi /etc/network/interfaces 
+
+Bước 6: Khởi động lại mạng: 
+  /etc/init.d/networking restart 
+
+Bước 7:Chạy lệnh  ifconfig để kiểm tra cấu hình mạng
 
 
 DSP Cloud Team
