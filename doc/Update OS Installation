@@ -1,0 +1,79 @@
+@@ -5,7 +5,20 @@ Script cài đặt được đặt trong thư mục eGovCloud/script
+ 
+ OS lựa chọn cho dự án là Ubuntu 12.04 LST
+ 
+-Các bước cài đặt:
++Tài liệu này gồm 2 phần:
++Phân 1: Chuẩn bị một server để triển khai Project
++  Yêu cầu của phần 1:
++# Phần này Thắng chủ trì, anh em bổ sung  
++  
++Phần 2: Chuẩn bị môi trường để xây dựng cloud (cài đặt KVM)
++  Yêu cầu phần 2:
++# Phần này Thắng chủ trì, anh em bổ sung
++
++# NỘI DUNG CỦA TÀI LIỆU
++
++PHẦN 1: CHUẨN BỊ SERVER
++
++Các bước cài đặt OS cho 1 server:
+ 
+ # Lê Tự Viết Thắng viết nội dung này
+ # Tất cả các thành viên của team comment
++ Cài đặt OS
++Bước 1: Đăng nhập vào IP quản trị của Ilo của rack server.
++Bước 2: Thực hiện khởi động server vật lý từ phần mềm ILO.
++Bước 3: Chọn kiểu boot cho server, ở đây do boot bằng file iso nên ta chọn boot là virtual disk
++Bước 4: Map file iso kết nối đến server vật lý để boot vào quá trình cài đặt.
++Bước 5: Boot vào giao diện ubuntu ta sẽ chọn install ubuntu server
++Bước 6: Chọn ngôn ngữ cài đặt : English.
++Bước 7: Chọn vùng cài đặt (Quốc gia, hay vùng): Vietnam
++Bước 8: Chọn miền quốc gia mà máy tính sẽ thực hiện cài đặt : United States.
++Bước 9: Cấu hình bàn phím ta chọn No.
++Bước 10: Như thiết lập miền địa phương, gần như tất cả các máy tính của Việt Nam thường sử dụng tiếng Anh như Mỹ bố trí bàn phím mặc định. Chọn English (US)> English US.
++Bước 11: Sau đó, đây là một phần cấu hình mạng. Ta sử dụng hai thẻ giao diện mạng, vì vậy nó sẽ hiển thị hai cấu hình như thế này. Chỉ cần chọn một trong số đó, eth0 hoặc eth1.
++Bước 12: Chọn 1 trong 2 card mạng trên để cấu hình.
++Bước 13: Cấu hình mạng bằng tay: Configure Network Manually
++Bước 14: Phần tiếp theo là cấu hình tên máy
++Bước 15: Cấu hình tên miền cho máy tính (nếu có)
++Bước 16: Ta sẽ setup tên đăng nhập và mật khẩu .
++Bước 17: Và nhập mật khẩu người dùng mới hai lần. Một cho mật khẩu mới bản thân nó, và một để xác nhận. Không bao giờ sử dụng mật khẩu yếu! Luôn luôn sử dụng các từ, số, kết hợp ký tự đặc biệt.
++Bước 18: Chọn No, nếu nó yêu cầu bạn mã hóa thư mục của mình.
++Bước 19: Sau đó, cấu hình thời gian cho server. Nếu  đang kết nối với internet, Ubuntu sẽ tự động cấu hình thời gian. Nếu nó là đúng, chọn Yes.
++Bước 20: Chọn Manual để cài đặt phân vùng ổ đĩa.
++Bước 21: Chọn ổ đĩa cần chia phân vùng.
++Bước 22: Cuối cùng chọn Yes để ghi các thay đổi  vào đĩa.
++Bước 23 :Khi quá trình đang chạy, đột nhiên yêu cầu  điền địa chỉ proxy HTTP. Chỉ cần để trống sau đó chọn Continue.
++Bước 24: Chọn Install Security Updates Automaticcally để đảm bảo hệ thống được an toàn
++Bước 25: Bây giờ, đây là phần lựa chọn gói cài đặt: Tạm thời sẽ chỉ cài đặt duy nhất 1 gói là  OpenSSH server
++Bước 26: Chọn Yes trong cài đặt này GRUB Boot Loader để thực hiện cho việc xử lý sự cố sau này.
++Bước 27: Chọn Continue để khởi động lại server và kết thúc quá trình cài đặt.
+
++PHẦN 2: CÀI ĐẶT KVM
++
++Các bước cài đặt KVM
++# Lê Tự Viết Thắng viết phần này
++# Tất cả các thành viên của team comment
++
++Bước 1: Cần xác định xem CPU của mình có hỗ trợ ảo hóa phần cứng hay không.
++
++  egrep '(vmx|svm)' --color=always /proc/cpuinfo
++
++Bước 2: Để cài đặt KVM và vmbuilder (một script để khởi tạo hệ thống máy ảo Ubuntu cơ bản) chúng ta chạy:
++  apt-get install ubuntu-virt-server python-vm-builder kvm-pxe
++
++Bước 3: Sau đó cần thêm vào user như là đăng nhập hiện tại (root) cho nhóm libvirtd: 
++  adduser `id -un` libvirtd
++  adduser `id -un` kvm 
++
++Bước 4: Cần đăng xuất và đăng nhập trở lại
++
++Bước 5: Tiếp theo chúng ta cần thiết lập một cầu nối cho mạng trên máy chủ (network bridge) để có thể truy cập máy ảo từ xa bằng các host khác nhau như hệ thống vật lý trong mạng. Để làm điều này, chỉ cần cài đặt gói bridge-utils... 
++  apt-get install bridge-utils 
++Và cấu hình một bridge. Mở /etc/network/interfaces: 
++  vi /etc/network/interfaces 
++
++Bước 6: Khởi động lại mạng: 
++  /etc/init.d/networking restart 
++
++Bước 7:Chạy lệnh  ifconfig để kiểm tra cấu hình mạng
