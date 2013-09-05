@@ -1,0 +1,160 @@
+@@ -0,0 +1,79 @@
++@@ -5,7 +5,20 @@ Script cài đặt được đặt trong thư mục eGovCloud/script
++ 
++ OS lựa chọn cho dự án là Ubuntu 12.04 LST
++ 
++-Các bước cài đặt:
+++Tài liệu này gồm 2 phần:
+++Phân 1: Chuẩn bị một server để triển khai Project
+++  Yêu cầu của phần 1:
+++# Phần này Thắng chủ trì, anh em bổ sung  
+++  
+++Phần 2: Chuẩn bị môi trường để xây dựng cloud (cài đặt KVM)
+++  Yêu cầu phần 2:
+++# Phần này Thắng chủ trì, anh em bổ sung
+++
+++# NỘI DUNG CỦA TÀI LIỆU
+++
+++PHẦN 1: CHUẨN BỊ SERVER
+++
+++Các bước cài đặt OS cho 1 server:
++ 
++ # Lê Tự Viết Thắng viết nội dung này
++ # Tất cả các thành viên của team comment
+++ Cài đặt OS
+++Bước 1: Đăng nhập vào IP quản trị của Ilo của rack server.
+++Bước 2: Thực hiện khởi động server vật lý từ phần mềm ILO.
+++Bước 3: Chọn kiểu boot cho server, ở đây do boot bằng file iso nên ta chọn boot là virtual disk
+++Bước 4: Map file iso kết nối đến server vật lý để boot vào quá trình cài đặt.
+++Bước 5: Boot vào giao diện ubuntu ta sẽ chọn install ubuntu server
+++Bước 6: Chọn ngôn ngữ cài đặt : English.
+++Bước 7: Chọn vùng cài đặt (Quốc gia, hay vùng): Vietnam
+++Bước 8: Chọn miền quốc gia mà máy tính sẽ thực hiện cài đặt : United States.
+++Bước 9: Cấu hình bàn phím ta chọn No.
+++Bước 10: Như thiết lập miền địa phương, gần như tất cả các máy tính của Việt Nam thường sử dụng tiếng Anh như Mỹ bố trí bàn phím mặc định. Chọn English (US)> English US.
+++Bước 11: Sau đó, đây là một phần cấu hình mạng. Ta sử dụng hai thẻ giao diện mạng, vì vậy nó sẽ hiển thị hai cấu hình như thế này. Chỉ cần chọn một trong số đó, eth0 hoặc eth1.
+++Bước 12: Chọn 1 trong 2 card mạng trên để cấu hình.
+++Bước 13: Cấu hình mạng bằng tay: Configure Network Manually
+++Bước 14: Phần tiếp theo là cấu hình tên máy
+++Bước 15: Cấu hình tên miền cho máy tính (nếu có)
+++Bước 16: Ta sẽ setup tên đăng nhập và mật khẩu .
+++Bước 17: Và nhập mật khẩu người dùng mới hai lần. Một cho mật khẩu mới bản thân nó, và một để xác nhận. Không bao giờ sử dụng mật khẩu yếu! Luôn luôn sử dụng các từ, số, kết hợp ký tự đặc biệt.
+++Bước 18: Chọn No, nếu nó yêu cầu bạn mã hóa thư mục của mình.
+++Bước 19: Sau đó, cấu hình thời gian cho server. Nếu  đang kết nối với internet, Ubuntu sẽ tự động cấu hình thời gian. Nếu nó là đúng, chọn Yes.
+++Bước 20: Chọn Manual để cài đặt phân vùng ổ đĩa.
+++Bước 21: Chọn ổ đĩa cần chia phân vùng.
+++Bước 22: Cuối cùng chọn Yes để ghi các thay đổi  vào đĩa.
+++Bước 23 :Khi quá trình đang chạy, đột nhiên yêu cầu  điền địa chỉ proxy HTTP. Chỉ cần để trống sau đó chọn Continue.
+++Bước 24: Chọn Install Security Updates Automaticcally để đảm bảo hệ thống được an toàn
+++Bước 25: Bây giờ, đây là phần lựa chọn gói cài đặt: Tạm thời sẽ chỉ cài đặt duy nhất 1 gói là  OpenSSH server
+++Bước 26: Chọn Yes trong cài đặt này GRUB Boot Loader để thực hiện cho việc xử lý sự cố sau này.
+++Bước 27: Chọn Continue để khởi động lại server và kết thúc quá trình cài đặt.
++
+++PHẦN 2: CÀI ĐẶT KVM
+++
+++Các bước cài đặt KVM
+++# Lê Tự Viết Thắng viết phần này
+Chú ý: hostname server1.example.com, địa chỉ IP: 172.20.20.100 là địa chỉ KVM host.
+Trước tiên cần kiểm tra xem CPU có hỗ trợ công nghệ ảo hóa phần cứng hay không, sử dụng câu lệnh sau:
+  egrep '(vmx|svm)' --color=always /proc/cpuinfo 
+Để cài đặt KVM và virtinst (1 công cụ để tạo máy ảo), ta thực hiện câu lệnh sau:
+yum install kvm qemu libvirt python-virtinst
+Sau đó khởi động libvirt daemon:
+  /etc/init.d/libvirtd start
+Để kiểm tra lại xem việc cài đặt KVM có thành công hay không, dùng câu lệnh sau:
+  virsh -c qemu:///system list
+Và nếu thành công, kết quả trả về sẽ có dạng như sau:
+  virsh -c qemu:///system list
+Tiếp theo, chúng ta cần thiết lập hệ thống mạng bắc cầu (network bridge) trên server, để máy ảo có thể được truy cập từ các địa chỉ host khác nhau, nếu những hệ thống host này có thật (sử dụng phần cứng vật lý).
+Để làm việc này, chúng ta cần cài đặt gói bridge-utils:
+  yum install bridge-utils 
+Để tùy chỉnh mạng bắc cầu, tạo file /etc/sysconfig/network-scripts/ifcfg-br0 (lưu ý sử dụng giá trị BOOTPROTO, DNS1 (hoặc bất kỳ DNS nào khác), GATEWAY, IPADDR, NETMASK và SEARCH từ file /etc/sysconfig/network-scripts/ifcfg-eth0):
+  vi /etc/sysconfig/network-scripts/ifcfg-br0
+
+  DEVICE=br0
+
+  TYPE=Bridge
+
+  BOOTPROTO=static
+
+  DNS1=8.8.8.8
+
+  GATEWAY=172.20.20.1
+
+  IPADDR=172.20.20.100
+
+  NETMASK=255.255.255.0
+
+  ONBOOT=yes
+
+  SEARCH="example.com"
+
+Tiếp theo, chỉnh /etc/sysconfig/network-scripts/ifcfg-eth0 theo giá trị sau:
+
+vi /etc/sysconfig/network-scripts/ifcfg-eth0
+
+# Networking Interface
+
+DEVICE=eth0
+
+#BOOTPROTO=none
+
+#DNS1=8.8.8.8
+
+#GATEWAY=172.20.20.1
+
+HWADDR=00:1e:90:f3:f0:02
+
+#IPADDR=172.20.20.100
+
+#NETMASK=255.255.255.0
+
+ONBOOT=yes
+
+TYPE=Ethernet
+
+IPV6INIT=no
+
+USERCTL=no
+
+BRIDGE=br0
+
+Kết thúc, khởi động lại hệ thống:
+
+  reboot
+
+Sau đó, chạy lệnh sau:
+
+  ifconfig 
+Hệ thống sẽ hiển thị mạng bắc cầu vừa tạo (br0)
+Cần tạo một máy ubuntu desktop để thực hiện kết nối với ubuntu server cài KVM.
+Cài đặt virt-manager trên Ubuntu desktop.
+  sudo aptitude install virt-manager
+Để tạo hệ thống máy ảo có tên "mayao" (chế độ bắc cầu) với tên vm10, RAM 512MB, 2 CPU ảo, file ảnh đĩa ~/vm10.qcow2 (dung lượng 12GB), tiếp theo cho đĩa Ubuntu CD vào ổ CD và chạy:
+
+virt-install --connect qemu:///system -n vm10 -r 512 --vcpus=2 -f ~/vm10.qcow2 -s 12 -c /dev/cdrom --vnc --noautoconsole --os-type linux --os-variant mayao --accelerate --network=bridge:br0 --hvm
+
+Và tất nhiên, ta có thể tạo file iso của đĩa cài đặt ubuntu:
+
+dd if=/dev/cdrom of=~/ubuntu-500-amd64-netinst.iso
+
+Sau đó, sử dụng file iso với dòng lệnh virt-install:
+
+virt-install --connect qemu:///system -n vm10 -r 512 --vcpus=2 -f ~/vm10.qcow2 -s 12 -c ~/ubuntu-500-amd64-netinst.iso --vnc --noautoconsole --os-type linux --os-variant mayao --accelerate --network=bridge:br0 --hvm 
+Khi khởi động virt-manager  ở máy ubuntu desktop lần đầu tiên, sẽ nhìn thấy thông báo sau: (Error determining default hypervisor. Bỏ qua và nhấn OK
+Chọn File > Add Connection... để kết nối tới Ubuntu KVM
+Chọn QEMU/KVM trong mục Hypervisor, Remote tunnel over SSH trong mục Connection, và gõ vào giá trị hostname (server1.example.com) hoặc địa chỉ IP (172.20.20.100) của Ubuntu KVM host. Sau đó nhấn nút Connect:
+Nếu đây là lần đầu tiên kết nối đến remote KVM server,ta phải gõ Yes và bấm OK:
+Sau đó điền mật khẩu root của Ubuntu KVM host
+Giờ đây, ta sẽ nhìn thấy vm10 đang hoạt động. Đánh dấu hệ thống đó lại và nhấn nút Open:
+Gõ mật khẩu root của KVM host lại lần nữa:
+Giờ đây, ta đã hoàn thành quá trình kết nối tới cửa sổ giao diện điều khiển của hệ thống guest và trình cài đặt Ubuntu.
+Lưu ý rằng đến khâu cuối của quá trình cài đặt, hệ thống Debian guest cần phải khởi động lại. Nhưng hệ thống guest sẽ tự động dừng lại, vì vậy ta phải khởi động bằng cách thông thường, cũng như virt-manager hoặc giống như hiện tượng này trên giao diện dòng lệnh Ubuntu KVM host:
+
+virsh --connect qemu:///system
+
+start vm10
+
+quit
+
+Sau đó, ta có thể kết nối tới hệ thống guest 1 lần nữa với virt-manager, tiến hành thiết lập, tùy chỉnh các thông số kỹ thuật phù hợp. Nếu ta cài đặt OpenSSH (gói openssh-server) trong hệ thống guest, ta có thể kết nối tới hệ thống bằng SSH client (tương tự như PuTTY).
