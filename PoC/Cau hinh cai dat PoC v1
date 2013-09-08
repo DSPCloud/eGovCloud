@@ -1,0 +1,45 @@
+---Tài liệu được viết bởi Nguyễn Thị Thu Thủy, Nguyễn Thị Cẩm Linh----
+
+Cấu hình cài đặt PoC v1 gồm 3 node: Controller, Network và Compute
+- Controller: ( cài trên máy ảo).
+  Máy vật lý cài Ubuntu desktop 64 bit 12.04, cài KVM và VMM (Virtual Machine Manager)
+  Máy ảo controller cài Ubuntu Server 12.04.03, gồm các gói:
+  + Mysql
+  + Keystone
+  + Rabbit MQ
+  + Glance
+  + Quantum Server
+  + Nova
+  + Cinder
+  + Dashboard
+  Dịa chỉ IP:
+  + Máy vật lý: eth0 (vlan500) 10.196.200.208/24
+                eth1.503 (vlan 503) 10.196.203.208/24
+  + V_Controller node: eth0 (vlan500) 10.196.200.108/24
+                       eth1 (vlan503) 10.196.203.108/24
+      
+                
+- Network node: cài Ubuntu Server 12.04.03 64 bit, các thành phần cần cài đặt
+  + Open Vswitch
+  + Quantum-plugin
+  + Quantum-dhcp-agent 
+  Dịa chỉ IP:
+  + eth0.500 (vlan 500) 10.196.200.102/24
+  + eth0.502 (vlan 502) 10.196.202.102/24
+  + eth1 (vlan 503) 10.196.203.102/24
+  
+- Compute node: cài trên 3 máy vật lý, cài Ubutu server 12.04.03 64 bit, các thành phần cần cài đặt
+  + KVM
+  + Nova
+  + OpenVswith
+  + Quantum-plugin-openvswitch-agent
+  Dịa chỉ IP:
+  Compute 1: 
+  + eth0 (vlan 500) 10.196.200.103/24
+  + eth1 (vlan 502) 10.196.202.103/24
+  Compute 2:
+  + eth0 (vlan 500) 10.196.200.104/24
+  + eth1 (vlan 502) 10.196.202.104/24
+  Compute 3;
+  + eth0 (vlan 500) 10.196.200.105/24
+  + eth1 (vlan 502) 10.196.202.105/24
