@@ -8,7 +8,6 @@ eGovernment Cloud Powered by Openstack
 Nội dung bao gồm:
 
 1. Chuẩn bị môi trường triển khai (OS và KVM)
-# Lê Tự Viết Thắng copy các file cầu hình quan trọng trong quá trình triển khai vào thư mục OS and KVM 
 
 2. Cài đặt và cầu hình cơ bản Compute node
 
