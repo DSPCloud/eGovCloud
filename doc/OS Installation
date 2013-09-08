@@ -82,29 +82,108 @@ PHẦN 2: CÀI ĐẶT KVM
 Các bước cài đặt KVM
 # Lê Tự Viết Thắng viết phần này
 # Tất cả các thành viên của team comment
+Chú ý: hostname server1.example.com, địa chỉ IP: 172.20.20.100 là địa chỉ KVM host.
+Bước 1: Trước tiên cần kiểm tra xem CPU có hỗ trợ công nghệ ảo hóa phần cứng hay không, sử dụng câu lệnh sau:
+  egrep '(vmx|svm)' --color=always /proc/cpuinfo 
+Bước 2: Để cài đặt KVM và virtinst (1 công cụ để tạo máy ảo), ta thực hiện câu lệnh sau:
+	yum install kvm qemu libvirt python-virtinst
+Bước 3: Sau đó khởi động libvirt daemon:
+  /etc/init.d/libvirtd start
+Bước 4: Để kiểm tra lại xem việc cài đặt KVM có thành công hay không, dùng câu lệnh sau:
+  virsh -c qemu:///system list
+Bước 5: Và nếu thành công, kết quả trả về sẽ có dạng như sau:
+  virsh -c qemu:///system list
+Bước 6: Tiếp theo, chúng ta cần thiết lập hệ thống mạng bắc cầu (network bridge) trên server, để máy ảo có thể được truy cập từ các địa chỉ host khác nhau, nếu những hệ thống host này có thật (sử dụng phần cứng vật lý).
+	Để làm việc này, chúng ta cần cài đặt gói bridge-utils:
+  		yum install bridge-utils 
+Bước 7: Để tùy chỉnh mạng bắc cầu, tạo file /etc/sysconfig/network-scripts/ifcfg-br0 (lưu ý sử dụng giá trị BOOTPROTO, DNS1 (hoặc bất kỳ DNS nào khác), GATEWAY, IPADDR, NETMASK và SEARCH từ file /etc/sysconfig/network-scripts/ifcfg-eth0):
+  vi /etc/sysconfig/network-scripts/ifcfg-br0
 
-Bước 1: Cần xác định xem CPU của mình có hỗ trợ ảo hóa phần cứng hay không.
+  DEVICE=br0
 
-  egrep '(vmx|svm)' --color=always /proc/cpuinfo
+  TYPE=Bridge
 
-Bước 2: Để cài đặt KVM và vmbuilder (một script để khởi tạo hệ thống máy ảo Ubuntu cơ bản) chúng ta chạy:
-	apt-get install ubuntu-virt-server python-vm-builder kvm-pxe
+  BOOTPROTO=static
 
-Bước 3: Sau đó cần thêm vào user như là đăng nhập hiện tại (root) cho nhóm libvirtd: 
-  adduser `id -un` libvirtd
-  adduser `id -un` kvm 
+  DNS1=8.8.8.8
 
-Bước 4: Cần đăng xuất và đăng nhập trở lại
+  GATEWAY=172.20.20.1
 
-Bước 5: Tiếp theo chúng ta cần thiết lập một cầu nối cho mạng trên máy chủ (network bridge) để có thể truy cập máy ảo từ xa bằng các host khác nhau như hệ thống vật lý trong mạng. Để làm điều này, chỉ cần cài đặt gói bridge-utils... 
-  apt-get install bridge-utils 
-Và cấu hình một bridge. Mở /etc/network/interfaces: 
-  vi /etc/network/interfaces 
+  IPADDR=172.20.20.100
 
-Bước 6: Khởi động lại mạng: 
-  /etc/init.d/networking restart 
+  NETMASK=255.255.255.0
 
-Bước 7:Chạy lệnh  ifconfig để kiểm tra cấu hình mạng
+  ONBOOT=yes
 
+  SEARCH="example.com"
+
+Bước 8: Tiếp theo, chỉnh /etc/sysconfig/network-scripts/ifcfg-eth0 theo giá trị sau:
+
+  vi /etc/sysconfig/network-scripts/ifcfg-eth0
+
+  # Networking Interface
+
+  DEVICE=eth0
+
+  BOOTPROTO=none
+
+  DNS1=8.8.8.8
+
+  GATEWAY=172.20.20.1
+
+  HWADDR=00:1e:90:f3:f0:02
+
+  IPADDR=172.20.20.100
+
+  NETMASK=255.255.255.0
+
+  ONBOOT=yes
+
+  TYPE=Ethernet
+
+  IPV6INIT=no
+
+  USERCTL=no
+
+  BRIDGE=br0
+
+Bước 9: Kết thúc, khởi động lại hệ thống:
+
+  reboot
+
+Bước 10: Sau đó, chạy lệnh sau:
+
+  ifconfig 
+ Hệ thống sẽ hiển thị mạng bắc cầu vừa tạo (br0)
+Bước 11: Cần tạo một máy ubuntu desktop để thực hiện kết nối với ubuntu server cài KVM.
+  Cài đặt virt-manager trên Ubuntu desktop.
+   sudo aptitude install virt-manager
+Bước 12: Để tạo hệ thống máy ảo có tên "mayao" (chế độ bắc cầu) với tên vm10, RAM 512MB, 2 CPU ảo, file ảnh đĩa ~/vm10.qcow2 (dung lượng 12GB), tiếp theo cho đĩa Ubuntu CD vào ổ CD và chạy:
+
+	virt-install --connect qemu:///system -n vm10 -r 512 --vcpus=2 -f ~/vm10.qcow2 -s 12 -c /dev/cdrom --vnc --noautoconsole --os-type linux --os-variant mayao --accelerate --network=bridge:br0 --hvm
+
+Bước 13: Ta có thể tạo file iso của đĩa cài đặt ubuntu:
+
+	dd if=/dev/cdrom of=~/ubuntu-500-amd64-netinst.iso
+
+Bước 14: Sau đó, sử dụng file iso với dòng lệnh virt-install:
+
+	virt-install --connect qemu:///system -n vm10 -r 512 --vcpus=2 -f ~/vm10.qcow2 -s 12 -c ~/ubuntu-500-amd64-netinst.iso --vnc --noautoconsole --os-type linux --os-variant mayao --accelerate --network=bridge:br0 --hvm 
+Bước 15: Khi khởi động virt-manager  ở máy ubuntu desktop lần đầu tiên, sẽ nhìn thấy thông báo sau: (Error determining default hypervisor. Bỏ qua và nhấn OK
+  Chọn File > Add Connection... để kết nối tới Ubuntu KVM
+  Chọn QEMU/KVM trong mục Hypervisor, Remote tunnel over SSH trong mục Connection, và gõ vào giá trị hostname (server1.example.com) hoặc địa chỉ IP (172.20.20.100) của Ubuntu KVM host. Sau đó nhấn nút Connect:
+Bước 16: Nếu đây là lần đầu tiên kết nối đến remote KVM server,ta phải gõ Yes và bấm OK:
+  Sau đó điền mật khẩu root của Ubuntu KVM host
+  Giờ đây, ta sẽ nhìn thấy vm10 đang hoạt động. Đánh dấu hệ thống đó lại và nhấn nút Open:
+  Gõ mật khẩu root của KVM host lại lần nữa:
+
+Giờ đây, ta đã hoàn thành quá trình kết nối tới cửa sổ giao diện điều khiển của hệ thống guest và trình cài đặt Ubuntu.
+Lưu ý rằng đến khâu cuối của quá trình cài đặt, hệ thống máy ảo Ubuntu guest cần phải khởi động lại. Nhưng hệ thống guest sẽ tự động dừng lại, vì vậy ta phải khởi động bằng cách thông thường, cũng như virt-manager hoặc giống như hiện tượng này trên giao diện dòng lệnh Ubuntu KVM host:
+
+	virsh --connect qemu:///system
+
+	start vm10
+
+	quit
 
 DSP Cloud Team
